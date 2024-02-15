@@ -1,0 +1,75 @@
+﻿@model PagedList.Core.IPagedList<Week5CaseStudy.Models.Post>
+
+<head>
+    <title>Code Together</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width" />
+@*     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> *@
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Blog List Start -->
+    <div class="container bg-white pt-5">
+
+        @{
+            var orderedPosts = Model.OrderByDescending(p => p.CreatedDate);
+        }
+        @foreach(var item in orderedPosts)
+        {
+            @if(item.State == "Live")
+            {
+
+                <div class="row blog-item px-3 pb-5">
+
+                    <div class="col-md-5">
+                        <img class="img-fluid mb-4 mb-md-0" src="img/blog-1.jpg" alt="Image">
+                    </div>
+
+                    <div class="col-md-7">
+
+                        <h3 class="mt-md-4 px-md-3 mb-2 py-2 bg-white font-weight-bold">@item.Title</h3>
+                        <br />
+                        <div class="d-flex mb-3">
+                            <small class="mr-2 text-muted"><i class="fa fa-pencil"></i> @item.User.Name @item.User.Surname</small>
+                            <small class="mr-2 text-muted"><i class="fa fa-calendar-alt"></i> @item.CreatedDate</small>
+                            <small class="mr-2 text-muted"><i class="fa fa-folder"></i> @item.Category.Name</small>
+                            @if (item.State == "Live")
+                            {
+                                <small class="mr-2 text-muted"><i class="fa fa-check"></i> @item.State</small>
+                            }
+                            else
+                            {
+                                <small class="mr-2 text-muted"><i class="fa fa-close"></i> @item.State</small>
+                            }
+
+                        </div>
+                        <p>
+                            @Html.Truncate(item.Content, 200)
+                        </p>
+                        <a asp-controller="Post" asp-action="PostDetails" asp-route-id="@item.Id" class="btn btn-link p-0">Read More <i class="fa fa-angle-right"></i></a>
+                    </div>
+                </div>
+            
+            }
+
+        }
+        </div>
+    <!-- Blog List End -->
+
+    <table class="table table-hover">
+
+        <!-- Önce <td> etiketini değiştirin -->
+        <td colspan="3" align="center">
+            <!-- İçeriği ortalamak için bir div ekleyin -->
+            <div style="display: inline-block;">
+                <pager list="@Model" asp-controller="Home" asp-action="Index" />
+            </div>
+        </td>
+
+    </table>
+
+</body>

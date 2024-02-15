@@ -1,0 +1,218 @@
+﻿@inject UserManager<IdentityUser> UserManager
+@using Microsoft.AspNetCore.Identity
+@model MyViewModel
+
+<head>
+    <title>Create Post</title>
+    <style>
+        .tags-input {
+            display: inline-block;
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+            box-shadow: 2px 2px 5px #00000033;
+            width: 50%;
+        }
+
+            .tags-input ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .tags-input li {
+                display: inline-block;
+                background-color: #f2f2f2;
+                color: #333;
+                border-radius: 20px;
+                padding: 5px 10px;
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
+
+            .tags-input input[type="text"] {
+                border: none;
+                outline: none;
+                padding: 5px;
+                font-size: 14px;
+            }
+
+                .tags-input input[type="text"]:focus {
+                    outline: none;
+                }
+
+            .tags-input .delete-button {
+                background-color: transparent;
+                border: none;
+                color: #999;
+                cursor: pointer;
+                margin-left: 5px;
+            }
+    </style>
+</head>
+
+<br />
+<h2 style="margin-left:70px">Create a post</h2>
+<div class="row">
+    <div class="col-md-4" style="margin-left:70px">
+        <form method="post" onsubmit="return validateForm();" asp-action="Create" asp-controller="Post" enctype="multipart/form-data" id="contactForm">
+            <label for="category">Category</label>
+            <select id="category">
+                <option value="" selected>Select a Category</option>
+                @foreach (var item in Model.CategoryList)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+            <script>
+                // Sayfa yüklendiğinde çalışacak kod
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Dropdown elementini al
+                    var selectElement = document.getElementById("category");
+
+                    // Değişiklik olduğunda çalışacak kod
+                    selectElement.onchange = function () {
+                        // Seçilen option'un değerini al
+                        var selectedValue = selectElement.value;
+
+                        // categoryContainer elementine değeri ata
+                        document.getElementById("categoryContainer").value = selectedValue;
+                    };
+
+                    var selectedValue = selectElement.value;
+                    document.getElementById("categoryContainer").value = selectedValue;
+                });
+
+                function validateForm() {
+                    var inputField1 = document.getElementById("categoryContainer"); // Boş bırakılan input alanının id'sini kullanın
+                    var inputField2 = document.getElementById("title"); // Boş bırakılan input alanının id'sini kullanın
+                    var inputField3 = document.getElementById("content"); // Boş bırakılan input alanının id'sini kullanın
+                    var inputValue1 = inputField1.value.trim();
+                    var inputValue2 = inputField2.value.trim();
+                    var inputValue3 = inputField3.value.trim();
+
+                    if (inputValue1 === "" || inputValue2 === "" || inputValue3 === "") {
+                        alert("All input fields are required.");
+                        return false; // Formun gönderilmesini engelle
+                    }
+
+                    return true; // Formu gönder
+                }
+            </script>
+
+            <div class="form-floating">
+                <input id="categoryContainer" asp-for="@Model.PostList.LastOrDefault().Category_Id" hidden />
+                @* <span asp-validation-for=@Model.PostList.LastOrDefault().Category_Id class="text-danger"></span> *@
+            </div>
+            <div>
+                <input asp-for=@Model.PostList.LastOrDefault().User_Id value=@UserManager.GetUserId(User) hidden />
+                @* <span asp-validation-for=@Model.PostList.LastOrDefault().User_Id class="text-danger"></span> *@
+            </div>
+            <br />
+            <div class="form-floating">
+                <label asp-for=@Model.PostList.LastOrDefault().Title></label>
+                <input id="title" asp-for=@Model.PostList.LastOrDefault().Title autocomplete=off type="text" class="form-control" placeholder="Title">
+                @* <span asp-validation-for=@Model.PostList.LastOrDefault().Title class="text-danger"></span> *@
+            </div>
+            <br />
+
+            @*
+            <div class="tags-input">
+            <ul id="tags-list"></ul>
+            <label asp-for="@Model.HashtagList.LastOrDefault().Name">Tags</label>
+            <input id="tags" asp-for="@Model.HashtagList.LastOrDefault().Name" autocomplete="off" type="text" placeholder="Tags">
+            </div>
+
+
+            <script>
+            const tagsList = document.getElementById('tags-list');
+            const tagsInput = document.getElementById('tags');
+
+            // Modelinizi JSON formatına dönüştürün
+            var hashtagModel = @Html.Raw(Json.Serialize(Model.HashtagList));
+
+            // Etiketleri gösteren fonksiyon
+            function showTags() {
+            tagsList.innerHTML = '';
+
+            hashtagModel.forEach(tag => {
+            const li = document.createElement('li');
+
+            // Etiket metnini içeren span
+            const tagText = document.createElement('span');
+            tagText.innerText = tag;
+            li.appendChild(tagText);
+
+            // Çarpı işareti ile silme butonu
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-button');
+            deleteButton.innerText = 'X';
+            li.appendChild(deleteButton);
+
+            tagsList.appendChild(li);
+            });
+            }
+
+            // Etiket girişi için 'Enter' tuşuna basıldığında çalışacak kod
+            tagsInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+            event.preventDefault();
+
+            const tagContent = tagsInput.value.trim();
+            if (tagContent !== '') {
+            var hashtagMapObj = {
+
+            }
+            hashtagModel.push(tagContent);
+            showTags();
+            tagsInput.value = '';
+            }
+            }
+            });
+
+            // Add an event listener for click on the tags list
+            tagsList.addEventListener('click', function (event) {
+
+            // If the clicked element has the class 'delete-button'
+            if (event.target.classList.contains('delete-button')) {
+
+            // Remove the parent element (the tag)
+            const tagElement = event.target.parentNode;
+            const tagIndex = Array.from(tagElement.parentNode.children).indexOf(tagElement);
+
+            // Silinen tag'ı modelden de kaldır
+            postModel.Hashtags.splice(tagIndex, 1);
+
+            tagElement.remove();
+            }
+            });
+
+            // Sayfa yüklendiğinde mevcut etiketleri göster
+            showTags();
+            </script>
+
+            *@
+
+
+            <div class="form-floating">
+                <label asp-for=@Model.PostList.LastOrDefault().Content></label>
+                <textarea id="content" asp-for=@Model.PostList.LastOrDefault().Content autocomplete=off type="text" class="form-control" cols="100" rows="100" placeholder="Post content"
+                          style="width:auto; height:300px;"></textarea>
+                @* <span asp-validation-for=@Model.PostList.LastOrDefault().Content class="text-danger"></span> *@
+            </div>
+            <br />
+            <div class="form-floating">
+                <h6>Choose the State of Your Post</h6>
+                Live     <input type="radio" id="live" asp-for=@Model.PostList.LastOrDefault().State value="Live">
+
+                Not Live    <input type="radio" id="notlive" asp-for=@Model.PostList.LastOrDefault().State value="Not Live">
+            </div>
+
+            <br />
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Share Post</button>
+
+        </form>
+    </div>
+</div>
+<br />

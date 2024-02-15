@@ -1,0 +1,97 @@
+﻿@inject UserManager<IdentityUser> UserManager
+@using Microsoft.AspNetCore.Identity
+@* @model Post *@
+@* <head>
+    <link asp-href-include="css/hashtag.css" rel="stylesheet">
+    <script src="~/js/hashtag.js"></script>
+</head> *@
+<br />
+
+@model MyViewModel
+
+
+
+<h2 style="margin-left:70px">Create a post</h2>
+<div class="row">
+    <div class="col-md-4" style="margin-left:70px">
+        <form method="post" asp-action="Create" asp-controller="Post" enctype="multipart/form-data" id="contactForm">
+            @*
+            <div class="form-floating">
+            <input asp-for="Category" type="text" class="form-control" placeholder="Category">
+            </div> *@
+            <label for="category">Category</label>
+            <select id="category">
+                @foreach (var item in Model.CategoryList)
+                {
+
+                    <option value=@item.Name>@item.Name</option>
+                }
+
+                @*                     <option value="php">PHP</option>
+                <option value="java">Java</option>
+                <option value="golang">Golang</option>
+                <option value="python">Python</option>
+                <option value="c#">C#</option>
+                <option value="C++">C++</option>
+                <option value="erlang">Erlang</option> *@
+            </select>
+            <br />
+
+
+            <div class="form-floating">
+                <input asp-for=@Model.PostList.Last().Title; type="text" class="form-control" placeholder="Title">
+            </div>
+            <br />
+            <div class="form-floating">
+                <textarea asp-for=@Model.PostList.Last().Content type="text" class="form-control" cols="100" rows="100" placeholder="Post content"
+                          style="width:auto;"></textarea>
+            </div>
+            <br />
+            <div class="form-floating">
+                <h6>Choose State the of Your Post</h6>
+                Live     <input type="radio" id="live" asp-for=@Model.PostList.Last().State value="Live">
+
+                Not Live    <input type="radio" id="notlive" asp-for=@Model.PostList.Last().State value="Not Live">
+
+            </div>
+            <div>
+                <input asp-for=@Model.PostList.Last().User_Id value=@UserManager.GetUserId(User) hidden />
+            </div>
+
+
+
+
+
+            <br />
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Share Post</button>
+            @*             <input type="text" id="hashtags" autocomplete="off" placeholder="Hashtag">
+            <div class="tag-container">
+            </div>
+            *@
+            @*
+            <div class="col-lg-12">
+            <div class="form-group">
+            <textarea asp-for="Description" type="text" class="form-control" cols="30" rows="4" placeholder="Description"></textarea>
+            </div>
+            </div>
+            <div class="col-lg-12">
+            <div class="form-group">
+            <input asp-for="ImageUrl" type="text" class="form-control" placeholder="ImageURL">
+            </div>
+            </div>
+            <div>
+            <input asp-for="InstructorId" value=@UserManager.GetUserId(User) hidden />
+            <input asp-for="EnrollmentCount" value=0 hidden />
+            </div>
+
+            <div class="col-md-12">
+            <div class="form-group">
+            <input type="submit" value="Send" class="btn btn-primary">
+            <div class="submitting"></div>
+            </div>
+            </div> *@
+
+        </form>
+    </div>
+</div>
+<br />
